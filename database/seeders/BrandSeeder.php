@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Core\HelperFunction;
-use App\Models\brand;
+use App\Models\Brand;
 use Illuminate\Database\Seeder;
 
 class BrandSeeder extends Seeder
@@ -22,7 +22,7 @@ class BrandSeeder extends Seeder
                 'slug' => 'brand-1'
             ],
             [
-                
+
                 'uuid' => HelperFunction::_uuid(),
                 'title' => 'Brand 2',
                 'slug' => 'brand-2'
@@ -31,13 +31,13 @@ class BrandSeeder extends Seeder
                 'uuid' => HelperFunction::_uuid(),
                 'title' => 'Brand 3',
                 'slug' => 'brand-3'
-            ]  
-            
+            ]
+
         ];
         // Store All Campuses in Database
         foreach ($brands as $item)
         {
-            brand::create($item);
+            Brand::create($item);
         }
     }
 }

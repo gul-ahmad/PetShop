@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\HelperFunction;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -41,4 +42,37 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    /**
+       *  Boot Function
+       */
+      protected static function boot()
+      {
+          parent::boot();
+
+          static::creating(function ($model) {
+
+            $model->{'uuid'} = HelperFunction::_uuid();
+
+          });
+      }
+
+    public function jwtTokens(){
+
+        return $this->hasone(Token::class);
+
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function orderStatus(){
+
+        return $this->hasone(OrderStatus::class);
+
+    }
+    public function payment(){
+
+        return $this->hasone(Payment::class);
+
+    }
 }

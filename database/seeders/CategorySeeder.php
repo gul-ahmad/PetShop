@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Core\HelperFunction;
-use App\Models\category;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -22,7 +22,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'category-1'
             ],
             [
-                
+
                 'uuid' => HelperFunction::_uuid(),
                 'title' => 'Category 2',
                 'slug' => 'category-2'
@@ -31,14 +31,14 @@ class CategorySeeder extends Seeder
                 'uuid' => HelperFunction::_uuid(),
                 'title' => 'Category 3',
                 'slug' => 'category-3'
-            ]  
-            
+            ]
+
         ];
         // Store All Campuses in Database
         foreach ($categories as $item)
         {
-            category::create($item);
+            Category::create($item);
         }
-        
+
     }
 }

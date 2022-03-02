@@ -15,12 +15,7 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-           // $table->uuid('category_uuid')->comment('FK categories.uuid');
             $table->foreignUuid('category_uuid');
-           // ->nullable();
-            //->references('uuid')
-           // ->on('categories')
-           // ->onDelete('cascade');
             $table->uuid('uuid');
             $table->string('title');
             $table->float('price');

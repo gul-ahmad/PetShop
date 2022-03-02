@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Core\HelperFunction;
-use App\Models\post;
+use App\Models\Post;
 use Illuminate\Database\Seeder;
 
 class PostSeeder extends Seeder
@@ -25,10 +25,10 @@ class PostSeeder extends Seeder
                  'metadata' => [
                     'author'=> 'iron',
                     'image'=> '12345678'
-                    ],    
+                    ],
             ],
             [
-                
+
                 'uuid' => HelperFunction::_uuid(),
                 'title' => 'This is the Second Post',
                 'slug' => 'this-is-the-second-post',
@@ -37,8 +37,8 @@ class PostSeeder extends Seeder
                  'metadata' => [
                     'author'=> 'abc',
                     'image'=> '12345678'
-                    ],   
-               
+                    ],
+
             ],
             [
                 'uuid' => HelperFunction::_uuid(),
@@ -49,8 +49,8 @@ class PostSeeder extends Seeder
                 'metadata' => [
                     'author'=> 'test',
                     'image'=> '12345678'
-                    ],  
-               
+                    ],
+
             ],
             [
                 'uuid' => HelperFunction::_uuid(),
@@ -61,8 +61,8 @@ class PostSeeder extends Seeder
                 'metadata' => [
                     'author'=> 'huio',
                     'image'=> '12345678'
-                    ],  
-               
+                    ],
+
             ],
             [
                 'uuid' => HelperFunction::_uuid(),
@@ -73,15 +73,15 @@ class PostSeeder extends Seeder
                 'metadata' => [
                    'author'=> 'tret',
                    'image'=> '12345678'
-                   ],  
-               
-            ]   
-            
+                   ],
+
+            ]
+
         ];
         // Store All Campuses in Database
         foreach ($posts as $item)
         {
-            post::create($item);
+            Post::create($item);
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Core\HelperFunction;
-use App\Models\promotion;
+use App\Models\Promotion;
 use Illuminate\Database\Seeder;
 
 class PromotionSeeder extends Seeder
@@ -24,10 +24,10 @@ class PromotionSeeder extends Seeder
                     'valid_from'=> '2022-01-01',
                     'valid_to'=> '2022-02-01',
                     'image'=> '12345678'
-                    ],     
+                    ],
             ],
             [
-                
+
                 'uuid' => HelperFunction::_uuid(),
                 'title' => 'Promotion 2',
                 'content' => 'This is the description',
@@ -35,7 +35,7 @@ class PromotionSeeder extends Seeder
                     'valid_from'=> '2022-01-01',
                     'valid_to'=> '2022-02-01',
                     'image'=> '12345678'
-                    ],  
+                    ],
             ],
             [
                 'uuid' => HelperFunction::_uuid(),
@@ -45,8 +45,8 @@ class PromotionSeeder extends Seeder
                     'valid_from'=> '2022-01-01',
                     'valid_to'=> '2022-02-01',
                     'image'=> '12345678'
-                    ],   
-               
+                    ],
+
             ],
             [
                 'uuid' => HelperFunction::_uuid(),
@@ -56,8 +56,8 @@ class PromotionSeeder extends Seeder
                     'valid_from'=> '2022-01-01',
                     'valid_to'=> '2022-02-01',
                     'image'=> '12345678'
-                    ],   
-               
+                    ],
+
             ],
             [
                 'uuid' => HelperFunction::_uuid(),
@@ -67,15 +67,15 @@ class PromotionSeeder extends Seeder
                     'valid_from'=> '2022-01-01',
                     'valid_to'=> '2022-02-01',
                     'image'=> '12345678'
-                    ],    
-               
-            ]   
-            
+                    ],
+
+            ]
+
         ];
         // Store All Campuses in Database
         foreach ($promotions as $item)
         {
-            promotion::create($item);
+            Promotion::create($item);
         }
     }
 }

@@ -6,9 +6,10 @@ use App\Core\HelperFunction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class OrderStatus extends Model
 {
     use HasFactory;
+
     /**
        *  Boot Function
        */
@@ -23,11 +24,12 @@ class Category extends Model
           });
       }
 
-
-
-    public function products(){
-
-       return $this->hasMany(Product::class,'uuid','category_uuid');
-
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function order()
+    {
+        return $this->hasone(Order::class);
     }
 }
