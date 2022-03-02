@@ -15,21 +15,17 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('category_uuid')->comment('FK categories.uuid');
-            $table->foreign('category_uuid')
-            ->nullable()
-            ->references('uuid')
-            ->on('categories')
-            ->onDelete('cascade');
-            $table->string('uuid')->comment('UUID to allow easy migration between envs without breaking FK in the logic');
+           // $table->uuid('category_uuid')->comment('FK categories.uuid');
+            $table->foreignUuid('category_uuid');
+           // ->nullable();
+            //->references('uuid')
+           // ->on('categories')
+           // ->onDelete('cascade');
+            $table->uuid('uuid');
             $table->string('title');
             $table->float('price');
             $table->text('description');
-            $table->json('meta')->comment('Example of the base content, can grow on demand.
-            {
-              "brand": "UUID from petshop.brands",
-              "image": "UUID from petshop.files"
-            }');
+            $table->json('meta');
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

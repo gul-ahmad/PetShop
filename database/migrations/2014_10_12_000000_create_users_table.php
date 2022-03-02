@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('uuid')->comment('UUID to allow easy migration between envs without breaking FK in the logic');
+            $table->uuid('uuid');
             $table->string('first_name');
             $table->string('last_name');
             $table->boolean('is_admin')->default(0);

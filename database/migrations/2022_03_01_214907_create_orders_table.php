@@ -15,6 +15,9 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('order_status_id')->nullable();
+            $table->unsignedBigInteger('payment_id')->nullable();
             $table->foreign('user_id')
             ->nullable()
             ->references('id')
@@ -30,8 +33,14 @@ class CreateOrdersTable extends Migration
             ->references('id')
             ->on('payments')
             ->onDelete('cascade');
+            $table->uuid('uuid');
+            $table->json('products');
+            $table->json('address');
+            $table->float('delivery_fee')->nullable();
+            $table->float('amount');
             $table->timestamps();
-            $table->string('uuid')->comment('UUID to allow easy migration between envs without breaking FK in the logic');
+            $table->timestamp('shipped_at')->nullable();
+           
         });
     }
 

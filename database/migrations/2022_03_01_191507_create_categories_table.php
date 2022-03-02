@@ -15,7 +15,7 @@ class CreateCategoriesTable extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('uuid')->comment('UUID to allow easy migration between envs without breaking FK in the logic');
+            $table->uuid('uuid');
             $table->string('title');
             $table->string('slug');
             $table->timestamps();
