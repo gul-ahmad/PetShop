@@ -31,11 +31,12 @@ use App\Http\Controllers\api\v1\AdminController;
 //});
 
 
-Route::group(['prefix' => 'v1', 'namespace' => 'api\v1','middleware'=>['auth:sanctum']], function () {
+Route::group(['prefix' => 'v1', 'namespace' => 'api\v1','middleware'=>['auth:sanctum','admin']], function () {
     Route::post('/admin/create',[App\Http\Controllers\api\v1\AdminController::class, 'register']);
-  /*   Route::post('admin/login',[App\Http\Controllers\api\v1\AdminController::class, 'login']);
+    Route::post('admin/login',[App\Http\Controllers\api\v1\AdminController::class, 'login']);
     Route::post('admin/logout',[App\Http\Controllers\api\v1\AdminController::class, 'logout']);
     Route::get('admin/user-listing',[App\Http\Controllers\api\v1\AdminController::class, 'index']);
-    Route::post('admin/user-edit/{uuid}',[App\Http\Controllers\api\v1\AdminController::class, 'edit']);
-    Route::post('admin/user-delete/{uuid}',[App\Http\Controllers\api\v1\AdminController::class, 'destroy']); */
+    Route::put('admin/user-edit/{uuid}',[App\Http\Controllers\api\v1\AdminController::class, 'edit']);
+    Route::delete('admin/user-delete/{uuid}',[App\Http\Controllers\api\v1\AdminController::class, 'destroy']); 
   });
+ //Token:3|0F6uA3DU3lIxzwFmKBpROZxOPc4jVeRjovjcySwN
