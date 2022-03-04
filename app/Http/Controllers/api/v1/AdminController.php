@@ -24,7 +24,8 @@ class AdminController extends Controller
 
     public function index()
     {
-        $data = User::latest()->get();
+        $data = User::where('is_admin','!=',1)->get();
+
         return response()->json([UserResource::collection($data), 'Users fetched.']);
     }
 
@@ -43,23 +44,34 @@ class AdminController extends Controller
             'last_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'phone_number' => 'required|string',
-        
+
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors());       
+            return response()->json($validator->errors());
+        }
+        $adminCheck = User::select('is_admin')
+                       ->where('uuid','=', $request->uuid)
+                       ->first();
+
+        if($adminCheck->is_admin ==1){
+
+            return response()->json('You cannot delete a user with admin account.');
+
+        }
+        else {
+            User::where('uuid',$request->uuid)
+            ->update([
+               'first_name' => $request->first_name,
+               'last_name' => $request->last_name,
+               'address' => $request->address,
+               'phone_number' => $request->phone_number,
+            ]);
+            return response()->json(['User Updated Successfully', new UserResource($user)]);
         }
 
-        User::where('uuid',$request->uuid)
-        ->update([
-         
-           'first_name' => $request->first_name,
-           'last_name' => $request->last_name,
-           'address' => $request->address,
-           'phone_number' => $request->phone_number,
-        ]);
-        
-        return response()->json(['User Updated Successfully', new UserResource($user)]);
+
+
     }
     public function register(Request $request)
     {
@@ -124,10 +136,22 @@ class AdminController extends Controller
 
     public function destroy($uuid)
     {
-        $post =User::where('uuid',$uuid)->firstOrFail();
-        $post->delete();
 
-        return response()->json('User deleted successfully');
+            $adminCheck = User::select('is_admin')
+            ->where('uuid','=', $request->uuid)
+            ->first();
+
+            if($adminCheck->is_admin ==1){
+
+                 return response()->json('You cannot delete a user with admin account.');
+
+            }
+            else {
+            $user=User::where('uuid',$uuid)->firstOrFail();
+            $user->delete();
+
+              return response()->json('User deleted successfully');
+            }
     }
 
 
