@@ -13,9 +13,9 @@ class Product extends Model
       protected $guarded = ['id'];
 
       protected $fillable = ['category_uuid','uuid','title','price','description','meta'];
-      
+
       protected $casts = [
-        'metadata' => 'array' // save  as a json column
+        'meta' => 'array' // save  as a json column
      ];
 
       /**

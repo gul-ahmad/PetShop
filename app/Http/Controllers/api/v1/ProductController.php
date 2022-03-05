@@ -44,15 +44,17 @@ class ProductController extends Controller
          $category1 = Category::find($request->CategoryId)->value('uuid');
         // $file = File::select(['uuid'])->where('id', '=', $request->FildId)->first();
         $file ='asdfjadf43243lkjdf';
-         $data =[];
-         $metaValues=array_push($data,array($brand,$file));
-       //  dd($metaValues);
+        // $data =array('brand'=>$brand,'file' =>$file);
+         $new_data = [];
+         $new_data["brand"] = $brand;
+         $new_data["file"] = $file;
+       
         $category = Product::create([
             'title' => $request->title,
             'price' => $request->price,
             'description' => $request->description,
             'category_uuid' => $category1,
-            'meta' => json_encode($metaValues),
+            'meta' => $new_data,
           ]);
     
           return new ProductResource($category);
