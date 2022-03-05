@@ -5,10 +5,14 @@ namespace App\Models;
 use App\Core\HelperFunction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Cviebrock\EloquentSluggable\Sluggable;
+
 
 class Brand extends Model
 {
-    use HasFactory;
+  use HasFactory,Sluggable;
+
+    protected $fillable = ['title','slug','uuid'];
 
      /**
        *  Boot Function
@@ -22,5 +26,14 @@ class Brand extends Model
             $model->{'uuid'} = HelperFunction::_uuid();
 
           });
+      }
+
+      public function sluggable(): array
+      {
+          return [
+              'slug' => [
+                  'source' => 'title'
+              ]
+          ];
       }
 }

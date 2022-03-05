@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\v1\AdminController;
+use App\Http\Controllers\api\v1\BrandsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +51,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'api\v1','middleware'=>['auth:san
     Route::delete('user/',[App\Http\Controllers\api\v1\UserController::class, 'destroy']);
     Route::post('user/logout',[App\Http\Controllers\api\v1\AdminController::class, 'logout']);
     //I could not understand above two routes
-    Route::get('user/orders',[App\Http\Controllers\api\v1\UserController::class, 'orders']);
+    Route::get('user/orders',[App\Http\Controllers\api\v1\UserController::class, 'userOrders']);
     Route::post('user/create',[App\Http\Controllers\api\v1\UserController::class, 'create']);
     //Could not understand above route what user will create
     Route::post('user/reset-password-token',[App\Http\Controllers\api\v1\UserController::class, 'resetPasswordToken']);
@@ -70,3 +71,30 @@ Route::group(['prefix' => 'v1', 'namespace' => 'api\v1','middleware'=>['auth:san
 
 
   });
+
+  Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
+  
+       Route::get('brand',[App\Http\Controllers\api\v1\BrandController::class, 'index']); 
+       Route::post('brand/create',[App\Http\Controllers\api\v1\BrandController::class, 'store']);
+       Route::put('brand/update/{uuid}',[App\Http\Controllers\api\v1\BrandController::class, 'update']);
+       Route::delete('brand/{uuid}',[App\Http\Controllers\api\v1\BrandController::class, 'destroy']); 
+
+});
+
+Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
+  
+    Route::get('categories',[App\Http\Controllers\api\v1\CategoryController::class, 'index']); 
+    Route::post('category/create',[App\Http\Controllers\api\v1\CategoryController::class, 'store']);
+    Route::put('category/update/{uuid}',[App\Http\Controllers\api\v1\CategoryController::class, 'update']);
+    Route::delete('category/{uuid}',[App\Http\Controllers\api\v1\CategoryController::class, 'destroy']); 
+
+});
+
+Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
+  
+    //Route::get('categories',[App\Http\Controllers\api\v1\CategoryController::class, 'index']); 
+    Route::post('product/create',[App\Http\Controllers\api\v1\ProductController::class, 'store']);
+   // Route::put('category/update/{uuid}',[App\Http\Controllers\api\v1\CategoryController::class, 'update']);
+    //Route::delete('category/{uuid}',[App\Http\Controllers\api\v1\CategoryController::class, 'destroy']); 
+
+});

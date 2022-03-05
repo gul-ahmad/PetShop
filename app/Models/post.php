@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
+    
     protected $casts = [
         'metadata' => 'array' // save  as a json column
      ];

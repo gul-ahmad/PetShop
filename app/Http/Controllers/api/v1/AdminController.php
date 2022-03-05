@@ -89,10 +89,9 @@ class AdminController extends Controller
         }
 
         $user = User::create([
-            //'uuid' => HelperFunction::_uuid(),
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'is_admin' => $request->is_admin,
+            'is_admin' => 1,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'address' => $request->address,
@@ -138,7 +137,7 @@ class AdminController extends Controller
     {
 
             $adminCheck = User::select('is_admin')
-            ->where('uuid','=', $request->uuid)
+            ->where('uuid','=',$uuid)
             ->first();
 
             if($adminCheck->is_admin ==1){

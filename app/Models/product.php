@@ -11,7 +11,12 @@ class Product extends Model
     use HasFactory;
 
       protected $guarded = ['id'];
-      //protected $fillable = ['id','name'];
+
+      protected $fillable = ['category_uuid','uuid','title','price','description','meta'];
+      
+      protected $casts = [
+        'metadata' => 'array' // save  as a json column
+     ];
 
       /**
        *  Boot Function
@@ -31,7 +36,7 @@ class Product extends Model
        public function category(){
 
 
-        return $this->hasMany(Category::class,'category_uuid','uuid');
+        return $this->belongsTo(Category::class,'category_uuid','uuid');
 
        }
 
