@@ -19,7 +19,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $data = Product::all();
+
+        return response()->json([ProductResource::collection($data), 'Products fetched.']);
     }
 
     /**
@@ -41,23 +43,23 @@ class ProductController extends Controller
             return response()->json(['Product already exist']);
          }
          $brand=Brand::find($request->brandId)->value('uuid');
+
          $category1 = Category::find($request->CategoryId)->value('uuid');
-        // $file = File::select(['uuid'])->where('id', '=', $request->FildId)->first();
         $file ='asdfjadf43243lkjdf';
         // $data =array('brand'=>$brand,'file' =>$file);
          $new_data = [];
          $new_data["brand"] = $brand;
          $new_data["file"] = $file;
        
-        $category = Product::create([
-            'title' => $request->title,
-            'price' => $request->price,
-            'description' => $request->description,
-            'category_uuid' => $category1,
-            'meta' => $new_data,
+        $product = Product::create([
+                            'title' => $request->title,
+                            'price' => $request->price,
+                            'description' => $request->description,
+                            'category_uuid' => $category1,
+                            'meta' => $new_data,
           ]);
     
-          return new ProductResource($category);
+          return new ProductResource($product);
     }
 
     /**
@@ -68,7 +70,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        return new ProductResource($id);
     }
 
     /**
@@ -80,7 +82,36 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required|unique:products',
+            'price' => 'required|numeric|min:2',
+            'description' => 'required',
+            
+        ]);
+ 
+         if (Product::where('title', $request->title)->exists()) {
+            return response()->json(['Product already exist']);
+         }
+         $brand=Brand::find($request->brandId)->value('uuid');
+
+         $category1 = Category::find($request->CategoryId)->value('uuid');
+       
+        $file ='asdfjadf43243lkjdf';
+        // $data =array('brand'=>$brand,'file' =>$file);
+         $new_data = [];
+         $new_data["brand"] = $brand;
+         $new_data["file"] = $file;
+       
+          $brand=Product::where('id',$id)
+                          ->update([
+                            'title' => $request->title,
+                            'price' => $request->price,
+                            'description' => $request->description,
+                            'category_uuid' => $category1,
+                            'meta' => $new_data,
+           
+        ]);
+        return response()->json(['Product Updated Successfully']);
     }
 
     /**
@@ -91,6 +122,9 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $product=Product::where('id',$id)->firstOrFail();
+        $product->delete();
+
+          return response()->json('Product deleted successfully');
     }
 }

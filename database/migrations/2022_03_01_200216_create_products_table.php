@@ -27,7 +27,8 @@ class CreateProductsTable extends Migration
             $table->text('description');
             $table->json('meta');
             $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
+            $table->softDeletes()->nullable();
+
         });
     }
 

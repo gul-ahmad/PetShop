@@ -92,9 +92,26 @@ Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
 
 Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
   
-    //Route::get('categories',[App\Http\Controllers\api\v1\CategoryController::class, 'index']); 
+    Route::get('product',[App\Http\Controllers\api\v1\ProductController::class, 'index']); 
     Route::post('product/create',[App\Http\Controllers\api\v1\ProductController::class, 'store']);
-   // Route::put('category/update/{uuid}',[App\Http\Controllers\api\v1\CategoryController::class, 'update']);
-    //Route::delete('category/{uuid}',[App\Http\Controllers\api\v1\CategoryController::class, 'destroy']); 
+    Route::put('product/update/{id}',[App\Http\Controllers\api\v1\ProductController::class, 'update']);
+    Route::delete('product/{id}',[App\Http\Controllers\api\v1\ProductController::class, 'destroy']); 
+
+});
+Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
+  
+    Route::get('order-status',[App\Http\Controllers\api\v1\OrderStatusController::class, 'index']); 
+    Route::post('order-status/create',[App\Http\Controllers\api\v1\OrderStatusController::class, 'store']);
+    Route::put('order-status/update/{uuid}',[App\Http\Controllers\api\v1\OrderStatusController::class, 'update']);
+    Route::delete('order-status/{uuid}',[App\Http\Controllers\api\v1\OrderStatusController::class, 'destroy']); 
+
+});
+
+Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
+  
+    //Route::get('order-status',[App\Http\Controllers\api\v1\OrderStatusController::class, 'index']); 
+    Route::post('payment/create',[App\Http\Controllers\api\v1\PaymentController::class, 'store']);
+   // Route::put('order-status/update/{uuid}',[App\Http\Controllers\api\v1\OrderStatusController::class, 'update']);
+    //Route::delete('order-status/{uuid}',[App\Http\Controllers\api\v1\OrderStatusController::class, 'destroy']); 
 
 });
