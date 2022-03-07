@@ -112,8 +112,10 @@ class PaymentController extends Controller
      */
     public function destroy($uuid)
     {
-        $product=Payment::where('id',$uuid)->firstOrFail();
-        $product->delete();
+       // dd($uuid);
+        $payment= Payment::where('uuid',$uuid)->firstOrFail();
+       // dd($payment);
+        $payment->delete();
 
           return response()->json('Payment deleted successfully');
     }

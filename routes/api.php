@@ -109,9 +109,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
 
 Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
   
-    //Route::get('order-status',[App\Http\Controllers\api\v1\OrderStatusController::class, 'index']); 
-    Route::post('payment/create',[App\Http\Controllers\api\v1\PaymentController::class, 'store']);
-   // Route::put('order-status/update/{uuid}',[App\Http\Controllers\api\v1\OrderStatusController::class, 'update']);
-    //Route::delete('order-status/{uuid}',[App\Http\Controllers\api\v1\OrderStatusController::class, 'destroy']); 
+    Route::get('payments',[App\Http\Controllers\api\v1\PaymentController::class, 'index']); 
+    Route::post('payments/create',[App\Http\Controllers\api\v1\PaymentController::class, 'store']);
+    Route::put('payments/update/{uuid}',[App\Http\Controllers\api\v1\PaymentController::class, 'update']);
+    Route::delete('payments/{uuid}',[App\Http\Controllers\api\v1\PaymentController::class,'destroy']); 
+
+});
+ //Pending 
+Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
+  
+   // Route::get('order',[App\Http\Controllers\api\v1\OrderController::class, 'index']); 
+    Route::post('order/create',[App\Http\Controllers\api\v1\OrderController::class, 'store']);
+   // Route::put('order/update/{uuid}',[App\Http\Controllers\api\v1\OrderController::class, 'update']);
+   // Route::delete('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class,'destroy']); 
 
 });
