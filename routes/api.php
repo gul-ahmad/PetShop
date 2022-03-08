@@ -116,7 +116,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
 
 });
  //Pending 
-Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
+Route::group(['prefix' => 'v1', 'namespace' => 'api\v1','middleware'=>['auth:sanctum']], function () {
   
    // Route::get('order',[App\Http\Controllers\api\v1\OrderController::class, 'index']); 
     Route::post('order/create',[App\Http\Controllers\api\v1\OrderController::class, 'store']);

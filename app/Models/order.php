@@ -14,7 +14,8 @@ class Order extends Model
 
     protected $casts = [
         'products' => 'array', // save  as a json column
-        'address' => 'array' // save  as a json column
+        'address' => 'array', // save  as a json column
+
      ];
 
       /**

@@ -56,7 +56,7 @@ class AdminController extends Controller
 
         if($adminCheck->is_admin ==1){
 
-            return response()->json('You cannot delete a user with admin account.');
+            return response()->json('You are not allowed.');
 
         }
         else {

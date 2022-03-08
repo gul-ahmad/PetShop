@@ -5,9 +5,11 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use DB;
 
 class OrderController extends Controller
 {
@@ -29,23 +31,55 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-       /*  $this->validate($request, [
-            'order_status_id' => 'required',
-            'payment_id' => 'required',
-            'quantity' => 'required', 
+         $this->validate($request, [
+            'type' => 'required',
+            'number' => 'required_if:type,credit_card',
+            'expire_date' => 'required_if:type,credit_card',
+            'ccv' => 'required_if:type,credit_card',
+            'holder_name' => 'required_if:type,credit_card',
+            'first_name' => 'required_if:type,cash_on_delivery',
+            'last_name' => 'required_if:type,cash_on_delivery',
+            'address' => 'required_if:type,cash_on_delivery',
+            'swift' => 'required_if:type,bank_transfer',
+            'iban' => 'required_if:type,bank_transfer',
+            'name' => 'required_if:type,bank_transfer',
+            'products' => 'required', 
+            'products.*.price' => 'required',
+            'products.*.quantity' => 'required',
+            'products.*.uuid' => 'required',
+            'billing' => 'required',
+            'shipping' => 'required',
             
-        ]); */
-        $total_amount = '0';
-        $products = $request->get('products');
-        $payment_method =$request->payment_type;
-       // $payment = Product::where('id', $request->products[$q])->first();
-      //  dd(count($products));
+        ]); 
+      
+        if($request->type =='credit_card'){
+            $payment_data = [];
+            $payment_data["holder_name"] = $request->holder_name;
+            $payment_data["ccv"] = $request->holder_name;
+            $payment_data["expire_date"] = $request->holder_name;
+            $payment_data["number"] = $request->holder_name;
 
-       // $first_value = $request->products[0]['product_ammount'];
-      // dd($first_value);
+         }
+         
+         if($request->type =='cash_on_delivery'){
+            $payment_data = [];
+            $payment_data["first_name"] = $request->first_name;
+            $payment_data["last_name"] = $request->last_name;
+            $payment_data["address"] = $request->address;
+
+         }
+         if($request->type =='bank_transfer'){
+            $payment_data = [];
+            $payment_data["swift"] = $request->swift;
+            $payment_data["iban"] = $request->iban;
+            $payment_data["name"] = $request->name;
+
+         }
+
        $total_qty = '0';
-        // loop through all products
-       // foreach ($products as $product) {
+      
+        $total_amount = '0';
+        $products = $request->get('products');   
         $new_data = [];
         $new_data["uuid"] = $request->uuid;
         $new_data["quantity"] = $request->quantity;
@@ -63,58 +97,49 @@ class OrderController extends Controller
 
 
         }
-       // for ($i = 0; $i < count($products); $i++) {
-           // echo $product['product_id'];
-           // echo $product['product_amount'];
-          // dd($i);
-         // $product = Product::where('id', $request->products[$i]['product_id'])->first();
-        // $total_amount += $request->products[$i]['price'];
-         $order = Order::create([
-            'user_id' => 1,
-            'order_status_id' => 2,
-            'payment_id' => 1,
-            'products' => $stock,
-            'address' => $new_address,
-            'amount' =>$total_amount,
-            'shipped_at'=>null
-            ]);
-            return new OrderResource($order);
-           
-      //  }
-     //   dd($total_amount);
-        // calculate total qty sale
-      /*   for ($q = 0; $q < count($orders); $q++) {
-           // $total_qty += $request->qty[$q];
-            $product = Product::where('id', $request->products[$q])->first();
-          //  dd($product);
-            $total_amount += $product->price[$q];
-        } */
-      
- 
-        /*      if($request->type =='credit_card'){
-                $new_data = [];
-                $new_data["holder_name"] = $request->holder_name;
-                $new_data["ccv"] = $request->holder_name;
-                $new_data["expire_date"] = $request->holder_name;
-                $new_data["number"] = $request->holder_name;
-
-             }
+        //Delivery Fee check
+        $delivery_fee = $total_amount > 500 ? 0 : 15;
+       
+           //Handling Order and Payment creation via Transaction in case of failur to rollback  
+            DB::beginTransaction();
+            try{
+    
+             // DB::connection()->enableQueryLog();
              
-             if($request->type =='cash_on_delivery'){
-                $new_data = [];
-                $new_data["first_name"] = $request->first_name;
-                $new_data["last_name"] = $request->last_name;
-                $new_data["address"] = $request->address;
-
-             }
-             if($request->type =='bank_transfer'){
-                $new_data = [];
-                $new_data["swift"] = $request->swift;
-                $new_data["iban"] = $request->iban;
-                $new_data["name"] = $request->name;
-
-             }
-     */
+               $payment = Payment::create([
+                'type' => $request->type,
+                'details' => $payment_data,
+                ]);
+               // $queries = DB::getQueryLog();
+                //return dd($queries);
+                if($payment) {
+                    $payment_id =$payment->id;
+                    $order = Order::create([
+                        'user_id' => Auth::user()->id,
+                        'order_status_id' => 3,
+                        'payment_id' => $payment_id,
+                        'products' => $stock,
+                        'address' => $new_address,
+                        'amount' =>$total_amount,
+                        'delivery_fee'=>$delivery_fee,
+                        'shipped_at'=>null
+                        ]);
+                      
+                }
+               
+                
+                DB::commit();
+    
+                return response()->json(['Order Created Successfully' => true]);
+    
+            } catch (\Exception $e) {
+                dd($e);
+    
+                DB::rollback();
+    
+                return response()->json(['Sorry your order was not placed' => true]);
+    
+            }
 }
     /**
      * Display the specified resource.
