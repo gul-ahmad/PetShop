@@ -20,7 +20,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+       return  $orders = Order::with('payment')->paginate(5);
     }
 
     /**
@@ -147,9 +147,10 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($uuid)
     {
-        //
+      return  $order = Order::with('payment')->where('uuid',$uuid)->firstOrFail();
+        
     }
 
     /**
@@ -159,9 +160,101 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $uuid)
     {
-        //
+        //Pending Gul
+        /* $this->validate($request, [
+            'order_status_uuid' => 'required',
+           // 'payment_uuid' => 'required',
+            'products' => 'required', 
+           // 'products.*.price' => 'required',
+            'products.*.quantity' => 'required',
+            'products.*.uuid' => 'required',
+            'billing' => 'required',
+            'shipping' => 'required',
+            
+        ]); 
+       
+      //  $total_qty = '0';
+      
+        $total_amount = '0';
+        $products = $request->get('products'); 
+        dd($products);  
+        $new_data = [];
+        $new_data["uuid"] = $request->uuid;
+        $new_data["quantity"] = $request->quantity;
+
+        $new_address = [];
+        $new_address["billing"] = $request->billing;
+        $new_address["shipping"] = $request->shipping;
+        $stock = []; 
+        for ($i = 0; $i < count($products); $i++) {
+
+            $price = Product::select('price')
+            ->where('uuid','=', $request->products[$i]['uuid'])
+            ->first();
+            $new_product = [];
+            $new_product["uuid"] = $request->products[$i]['uuid'];
+            $new_product["quantity"] =$request->products[$i]['quantity'];
+            $total_amount += $price->price[$i]['price'];
+            array_push($stock, $new_product);
+
+
+        }
+        //Delivery Fee check
+        $delivery_fee = $total_amount > 500 ? 0 : 15;
+       
+           //Handling Order and Payment creation via Transaction in case of failur to rollback  
+            DB::beginTransaction();
+            try{
+    
+             // DB::connection()->enableQueryLog();
+             
+               $payment = Payment::create([
+                'type' => $request->type,
+                'details' => $payment_data,
+                ]);
+               // $queries = DB::getQueryLog();
+                //return dd($queries);
+                if($payment) {
+                    $payment_id =$payment->id;
+                    $order = Order::create([
+                        'user_id' => Auth::user()->id,
+                        'order_status_id' => 3,
+                        'payment_id' => $payment_id,
+                        'products' => $stock,
+                        'address' => $new_address,
+                        'amount' =>$total_amount,
+                        'delivery_fee'=>$delivery_fee,
+                        'shipped_at'=>Carbon::now()
+                        ]);
+
+                        Order::where('uuid', $request->uuid)->update([
+                            'user_id' => Auth::user()->id,
+                            'order_status_id' => 3,
+                            'payment_id' => $payment_id,
+                            'products' => $stock,
+                            'address' => $new_address,
+                            'amount' =>$total_amount,
+                            'delivery_fee'=>$delivery_fee,
+                            'shipped_at'=>Carbon::now()
+                        ]);
+                      
+                }
+               
+                
+                DB::commit();
+    
+                return response()->json(['Order Created Successfully' => true]);
+    
+            } catch (\Exception $e) {
+                dd($e);
+    
+                DB::rollback();
+    
+                return response()->json(['Sorry your order was not placed' => true]);
+    
+            } */
     }
 
     /**
@@ -170,8 +263,12 @@ class OrderController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($uuid)
     {
-        //
+        $order=Order::where('uuid',$uuid)->firstOrFail();
+        $order->payment()->delete();
+        $order->delete();
+
+          return response()->json('Order deleted successfully');
     }
 }

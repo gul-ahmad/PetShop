@@ -118,9 +118,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'api\v1'], function () {
  //Pending 
 Route::group(['prefix' => 'v1', 'namespace' => 'api\v1','middleware'=>['auth:sanctum']], function () {
   
-   // Route::get('order',[App\Http\Controllers\api\v1\OrderController::class, 'index']); 
+    Route::get('orders',[App\Http\Controllers\api\v1\OrderController::class, 'index']); 
     Route::post('order/create',[App\Http\Controllers\api\v1\OrderController::class, 'store']);
-   // Route::put('order/update/{uuid}',[App\Http\Controllers\api\v1\OrderController::class, 'update']);
-   // Route::delete('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class,'destroy']); 
+    Route::get('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class, 'show']); 
+    Route::put('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class, 'update']);
+     Route::delete('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class,'destroy']);
+     Route::get('orders/dashboard',[App\Http\Controllers\api\v1\OrderController::class, 'dashboard']);  
 
 });
