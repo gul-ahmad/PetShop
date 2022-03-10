@@ -23,6 +23,54 @@ class OrderController extends Controller
        return  $orders = Order::with('payment')->paginate(5);
     }
 
+    public function dashboard(Request $request){
+
+            $ordersList = Order::with('payment')->paginate(5);
+
+            $totalEarnings =Order::sum('amount');
+           
+            $lastThirtyDaysEarning =  Order::whereMonth('created_at', date('m'))
+                            ->whereYear('created_at', date('Y'))
+                            ->sum('amount');
+
+
+            $yearlySales = Order::select(
+                                DB::raw("year(created_at) as year"),
+                                DB::raw("count(created_at) as yearlySales"))
+                            ->orderBy(DB::raw("YEAR(created_at)"))
+                            ->groupBy(DB::raw("YEAR(created_at)"))
+                            ->get();
+
+            $monthlySales = Order::select(
+                                DB::raw("month(created_at) as month"),
+                                DB::raw("count(created_at) as monthlySales"))
+                            ->orderBy(DB::raw("MONTH(created_at)"))
+                            ->groupBy(DB::raw("MONTH(created_at)"))
+                            ->get();
+            $weeklySales = Order::select(
+                                DB::raw("week(created_at) as week"),
+                                DB::raw("count(created_at) as weeklySales"))
+                            ->orderBy(DB::raw("WEEK(created_at)"))
+                            ->groupBy(DB::raw("WEEK(created_at)"))
+                            ->get(); 
+
+             $today = date('Y-m-d');
+             $todaysales = Order::whereDate('created_at', '=', $today)->count();   
+            
+
+            $betweenDateRange = Order::whereBetween('created_at',[$request->from, $request->to])->count();
+           
+         
+            return ['ordersList' => $ordersList, 'totalEarnings' => $totalEarnings,'lastThirtyDaysEarning' => $lastThirtyDaysEarning,
+                   
+                    'yearlySales' => $yearlySales,'monthlySales'=>$monthlySales, 'weeklySales'=> $weeklySales,'todaysales'=>$todaysales,
+                    'betweenDateRange' =>$betweenDateRange
+        
+               ];
+
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *
