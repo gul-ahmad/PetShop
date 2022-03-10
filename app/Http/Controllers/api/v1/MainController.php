@@ -18,17 +18,14 @@ class MainController extends Controller
         return response()->json([PostResource::collection($data), 'Posts fetched.']);
     }
 
-    public function single($uuid){
+    public function single($uuid)
+    {
 
         return new PostResource(Post::findOrFail($uuid));
-
-
     }
 
     public function promotionIndex()
     {
         return PromotionResource::collection(Promotion::all());
     }
-
-
 }

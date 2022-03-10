@@ -15,22 +15,15 @@ use App\Models\User;
 
 class AdminController extends Controller
 {
-
-   /*  public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('admin');
-    } */
-
     public function index()
     {
-        $data = User::where('is_admin','!=',1)->get();
+        $data = User::where('is_admin', '!=', 1)->get();
 
         return response()->json([UserResource::collection($data), 'Users fetched.']);
     }
 
 
-     /**
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -39,43 +32,38 @@ class AdminController extends Controller
      */
     public function edit(Request $request, User $user)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'phone_number' => 'required|string',
-
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
+
             return response()->json($validator->errors());
         }
         $adminCheck = User::select('is_admin')
-                       ->where('uuid','=', $request->uuid)
-                       ->first();
+            ->where('uuid', '=', $request->uuid)
+            ->first();
 
-        if($adminCheck->is_admin ==1){
+        if ($adminCheck->is_admin == 1) {
 
             return response()->json('You are not allowed.');
-
-        }
-        else {
-            User::where('uuid',$request->uuid)
-            ->update([
-               'first_name' => $request->first_name,
-               'last_name' => $request->last_name,
-               'address' => $request->address,
-               'phone_number' => $request->phone_number,
-            ]);
+        } else {
+            User::where('uuid', $request->uuid)
+                ->update([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'address' => $request->address,
+                    'phone_number' => $request->phone_number,
+                ]);
             return response()->json(['User Updated Successfully', new UserResource($user)]);
         }
-
-
-
     }
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
@@ -84,7 +72,8 @@ class AdminController extends Controller
             'password' => 'required|string|min:8'
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
+
             return response()->json($validator->errors());
         }
 
@@ -98,20 +87,18 @@ class AdminController extends Controller
             'phone_number' => $request->phone_number,
             'is_marketing' => $request->is_marketing,
 
-         ]);
+        ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()
-            ->json(['data' => $user,'access_token' => $token, 'token_type' => 'Bearer', ]);
+        return response()->json(['data' => $user, 'access_token' => $token, 'token_type' => 'Bearer',]);
     }
 
     public function login(Request $request)
     {
-        if (!Auth::attempt($request->only('email', 'password')))
-        {
-            return response()
-                ->json(['message' => 'Unauthorized'], 401);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
@@ -119,7 +106,7 @@ class AdminController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()
-            ->json(['message' => 'Hi Admin '.$user->name.', welcome to home','access_token' => $token, 'token_type' => 'Bearer', ]);
+            ->json(['message' => 'Hi Admin ' . $user->name . ', welcome to home', 'access_token' => $token, 'token_type' => 'Bearer',]);
     }
 
     // method for user logout and delete token
@@ -135,24 +122,19 @@ class AdminController extends Controller
 
     public function destroy($uuid)
     {
-
-            $adminCheck = User::select('is_admin')
-            ->where('uuid','=',$uuid)
+        $adminCheck = User::select('is_admin')
+            ->where('uuid', '=', $uuid)
             ->first();
 
-            if($adminCheck->is_admin ==1){
+        if ($adminCheck->is_admin == 1) {
 
-                 return response()->json('You cannot delete a user with admin account.');
+            return response()->json('You cannot delete a user with admin account.');
+        } else {
 
-            }
-            else {
-            $user=User::where('uuid',$uuid)->firstOrFail();
+            $user = User::where('uuid', $uuid)->firstOrFail();
             $user->delete();
 
-              return response()->json('User deleted successfully');
-            }
+            return response()->json('User deleted successfully');
+        }
     }
-
-
-
 }

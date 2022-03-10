@@ -20,55 +20,56 @@ class OrderController extends Controller
      */
     public function index()
     {
-       return  $orders = Order::with('payment')->paginate(5);
+        return  $orders = Order::with('payment')->paginate(5);
     }
 
-    public function dashboard(Request $request){
+    public function dashboard(Request $request)
+    {
 
-            $ordersList = Order::with('payment')->paginate(5);
+        $ordersList = Order::with('payment')->paginate(5);
 
-            $totalEarnings =Order::sum('amount');
-           
-            $lastThirtyDaysEarning =  Order::whereMonth('created_at', date('m'))
-                            ->whereYear('created_at', date('Y'))
-                            ->sum('amount');
+        $totalEarnings = Order::sum('amount');
 
-
-            $yearlySales = Order::select(
-                                DB::raw("year(created_at) as year"),
-                                DB::raw("count(created_at) as yearlySales"))
-                            ->orderBy(DB::raw("YEAR(created_at)"))
-                            ->groupBy(DB::raw("YEAR(created_at)"))
-                            ->get();
-
-            $monthlySales = Order::select(
-                                DB::raw("month(created_at) as month"),
-                                DB::raw("count(created_at) as monthlySales"))
-                            ->orderBy(DB::raw("MONTH(created_at)"))
-                            ->groupBy(DB::raw("MONTH(created_at)"))
-                            ->get();
-            $weeklySales = Order::select(
-                                DB::raw("week(created_at) as week"),
-                                DB::raw("count(created_at) as weeklySales"))
-                            ->orderBy(DB::raw("WEEK(created_at)"))
-                            ->groupBy(DB::raw("WEEK(created_at)"))
-                            ->get(); 
-
-             $today = date('Y-m-d');
-             $todaysales = Order::whereDate('created_at', '=', $today)->count();   
-            
-
-            $betweenDateRange = Order::whereBetween('created_at',[$request->from, $request->to])->count();
-           
-         
-            return ['ordersList' => $ordersList, 'totalEarnings' => $totalEarnings,'lastThirtyDaysEarning' => $lastThirtyDaysEarning,
-                   
-                    'yearlySales' => $yearlySales,'monthlySales'=>$monthlySales, 'weeklySales'=> $weeklySales,'todaysales'=>$todaysales,
-                    'betweenDateRange' =>$betweenDateRange
-        
-               ];
+        $lastThirtyDaysEarning =  Order::whereMonth('created_at', date('m'))
+            ->whereYear('created_at', date('Y'))
+            ->sum('amount');
 
 
+        $yearlySales = Order::select(
+            DB::raw("year(created_at) as year"),
+            DB::raw("count(created_at) as yearlySales")
+        )
+            ->orderBy(DB::raw("YEAR(created_at)"))
+            ->groupBy(DB::raw("YEAR(created_at)"))
+            ->get();
+
+        $monthlySales = Order::select(
+            DB::raw("month(created_at) as month"),
+            DB::raw("count(created_at) as monthlySales")
+        )
+            ->orderBy(DB::raw("MONTH(created_at)"))
+            ->groupBy(DB::raw("MONTH(created_at)"))
+            ->get();
+
+        $weeklySales = Order::select(
+            DB::raw("week(created_at) as week"),
+            DB::raw("count(created_at) as weeklySales")
+        )
+            ->orderBy(DB::raw("WEEK(created_at)"))
+            ->groupBy(DB::raw("WEEK(created_at)"))
+            ->get();
+
+        $today = date('Y-m-d');
+        $todaysales = Order::whereDate('created_at', '=', $today)->count();
+
+        $betweenDateRange = Order::whereBetween('created_at', [$request->from, $request->to])->count();
+
+        return [
+            'ordersList' => $ordersList, 'totalEarnings' => $totalEarnings, 'lastThirtyDaysEarning' => $lastThirtyDaysEarning,
+            'yearlySales' => $yearlySales, 'monthlySales' => $monthlySales, 'weeklySales' => $weeklySales, 'todaysales' => $todaysales,
+            'betweenDateRange' => $betweenDateRange
+
+        ];
     }
 
     /**
@@ -79,7 +80,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-         $this->validate($request, [
+        $this->validate($request, [
             'type' => 'required',
             'number' => 'required_if:type,credit_card',
             'expire_date' => 'required_if:type,credit_card',
@@ -91,43 +92,40 @@ class OrderController extends Controller
             'swift' => 'required_if:type,bank_transfer',
             'iban' => 'required_if:type,bank_transfer',
             'name' => 'required_if:type,bank_transfer',
-            'products' => 'required', 
+            'products' => 'required',
             'products.*.price' => 'required',
             'products.*.quantity' => 'required',
             'products.*.uuid' => 'required',
             'billing' => 'required',
             'shipping' => 'required',
-            
-        ]); 
-      
-        if($request->type =='credit_card'){
+
+        ]);
+
+        if ($request->type == 'credit_card') {
             $payment_data = [];
             $payment_data["holder_name"] = $request->holder_name;
             $payment_data["ccv"] = $request->holder_name;
             $payment_data["expire_date"] = $request->holder_name;
             $payment_data["number"] = $request->holder_name;
+        }
 
-         }
-         
-         if($request->type =='cash_on_delivery'){
+        if ($request->type == 'cash_on_delivery') {
             $payment_data = [];
             $payment_data["first_name"] = $request->first_name;
             $payment_data["last_name"] = $request->last_name;
             $payment_data["address"] = $request->address;
-
-         }
-         if($request->type =='bank_transfer'){
+        }
+        if ($request->type == 'bank_transfer') {
             $payment_data = [];
             $payment_data["swift"] = $request->swift;
             $payment_data["iban"] = $request->iban;
             $payment_data["name"] = $request->name;
+        }
 
-         }
+        $total_qty = '0';
 
-       $total_qty = '0';
-      
         $total_amount = '0';
-        $products = $request->get('products');   
+        $products = $request->get('products');
         $new_data = [];
         $new_data["uuid"] = $request->uuid;
         $new_data["quantity"] = $request->quantity;
@@ -135,60 +133,55 @@ class OrderController extends Controller
         $new_address = [];
         $new_address["billing"] = $request->billing;
         $new_address["shipping"] = $request->shipping;
-        $stock = []; 
+        $stock = [];
         for ($i = 0; $i < count($products); $i++) {
             $new_product = [];
             $new_product["uuid"] = $request->products[$i]['uuid'];
-            $new_product["quantity"] =$request->products[$i]['quantity'];
+            $new_product["quantity"] = $request->products[$i]['quantity'];
             $total_amount += $request->products[$i]['price'];
             array_push($stock, $new_product);
-
-
         }
         //Delivery Fee check
         $delivery_fee = $total_amount > 500 ? 0 : 15;
-       
-           //Handling Order and Payment creation via Transaction in case of failur to rollback  
-            DB::beginTransaction();
-            try{
-    
-             // DB::connection()->enableQueryLog();
-             
-               $payment = Payment::create([
+
+        //Handling Order and Payment creation via Transaction in case of failur to rollback
+        DB::beginTransaction();
+        try {
+
+            // DB::connection()->enableQueryLog();
+
+            $payment = Payment::create([
                 'type' => $request->type,
                 'details' => $payment_data,
+            ]);
+            // $queries = DB::getQueryLog();
+            //return dd($queries);
+            if ($payment) {
+                $payment_id = $payment->id;
+                $order = Order::create([
+                    'user_id' => Auth::user()->id,
+                    'order_status_id' => 3,
+                    'payment_id' => $payment_id,
+                    'products' => $stock,
+                    'address' => $new_address,
+                    'amount' => $total_amount,
+                    'delivery_fee' => $delivery_fee,
+                    'shipped_at' => null
                 ]);
-               // $queries = DB::getQueryLog();
-                //return dd($queries);
-                if($payment) {
-                    $payment_id =$payment->id;
-                    $order = Order::create([
-                        'user_id' => Auth::user()->id,
-                        'order_status_id' => 3,
-                        'payment_id' => $payment_id,
-                        'products' => $stock,
-                        'address' => $new_address,
-                        'amount' =>$total_amount,
-                        'delivery_fee'=>$delivery_fee,
-                        'shipped_at'=>null
-                        ]);
-                      
-                }
-               
-                
-                DB::commit();
-    
-                return response()->json(['Order Created Successfully' => true]);
-    
-            } catch (\Exception $e) {
-                dd($e);
-    
-                DB::rollback();
-    
-                return response()->json(['Sorry your order was not placed' => true]);
-    
             }
-}
+
+
+            DB::commit();
+
+            return response()->json(['Order Created Successfully' => true]);
+        } catch (\Exception $e) {
+           // dd($e);
+
+            DB::rollback();
+
+            return response()->json(['Sorry your order was not placed' => true]);
+        }
+    }
     /**
      * Display the specified resource.
      *
@@ -197,8 +190,7 @@ class OrderController extends Controller
      */
     public function show($uuid)
     {
-      return  $order = Order::with('payment')->where('uuid',$uuid)->firstOrFail();
-        
+        return  $order = Order::with('payment')->where('uuid', $uuid)->firstOrFail();
     }
 
     /**
@@ -214,20 +206,20 @@ class OrderController extends Controller
         /* $this->validate($request, [
             'order_status_uuid' => 'required',
            // 'payment_uuid' => 'required',
-            'products' => 'required', 
+            'products' => 'required',
            // 'products.*.price' => 'required',
             'products.*.quantity' => 'required',
             'products.*.uuid' => 'required',
             'billing' => 'required',
             'shipping' => 'required',
-            
-        ]); 
-       
+
+        ]);
+
       //  $total_qty = '0';
-      
+
         $total_amount = '0';
-        $products = $request->get('products'); 
-        dd($products);  
+        $products = $request->get('products');
+        dd($products);
         $new_data = [];
         $new_data["uuid"] = $request->uuid;
         $new_data["quantity"] = $request->quantity;
@@ -235,7 +227,7 @@ class OrderController extends Controller
         $new_address = [];
         $new_address["billing"] = $request->billing;
         $new_address["shipping"] = $request->shipping;
-        $stock = []; 
+        $stock = [];
         for ($i = 0; $i < count($products); $i++) {
 
             $price = Product::select('price')
@@ -251,13 +243,13 @@ class OrderController extends Controller
         }
         //Delivery Fee check
         $delivery_fee = $total_amount > 500 ? 0 : 15;
-       
-           //Handling Order and Payment creation via Transaction in case of failur to rollback  
+
+           //Handling Order and Payment creation via Transaction in case of failur to rollback
             DB::beginTransaction();
             try{
-    
+
              // DB::connection()->enableQueryLog();
-             
+
                $payment = Payment::create([
                 'type' => $request->type,
                 'details' => $payment_data,
@@ -287,21 +279,21 @@ class OrderController extends Controller
                             'delivery_fee'=>$delivery_fee,
                             'shipped_at'=>Carbon::now()
                         ]);
-                      
+
                 }
-               
-                
+
+
                 DB::commit();
-    
+
                 return response()->json(['Order Created Successfully' => true]);
-    
+
             } catch (\Exception $e) {
                 dd($e);
-    
+
                 DB::rollback();
-    
+
                 return response()->json(['Sorry your order was not placed' => true]);
-    
+
             } */
     }
 
@@ -313,10 +305,10 @@ class OrderController extends Controller
      */
     public function destroy($uuid)
     {
-        $order=Order::where('uuid',$uuid)->firstOrFail();
+        $order = Order::where('uuid', $uuid)->firstOrFail();
         $order->payment()->delete();
         $order->delete();
 
-          return response()->json('Order deleted successfully');
+        return response()->json('Order deleted successfully');
     }
 }

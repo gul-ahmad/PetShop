@@ -31,16 +31,16 @@ class OrderStatusController extends Controller
     {
         $this->validate($request, [
             'title' => 'required|unique:order_statuses',
-         ]);
- 
-         if (OrderStatus::where('title', $request->title)->exists()) {
+        ]);
+
+        if (OrderStatus::where('title', $request->title)->exists()) {
             return response()->json(['Status already exist']);
-         }
+        }
         $status = OrderStatus::create([
-                        'title' => $request->title,
-          ]);
-    
-          return new OrderStatusResource($status);
+            'title' => $request->title,
+        ]);
+
+        return new OrderStatusResource($status);
     }
 
     /**
@@ -52,7 +52,6 @@ class OrderStatusController extends Controller
     public function show($uuid)
     {
         return new OrderStatusResource($uuid);
-
     }
 
     /**
@@ -66,15 +65,15 @@ class OrderStatusController extends Controller
     {
         $this->validate($request, [
             'title' => 'required|unique:order_statuses',
-         ]);
+        ]);
         if (OrderStatus::where('title', $request->title)->exists()) {
             return response()->json(['status already exist']);
         }
-        $brand=OrderStatus::where('uuid',$uuid)
-        ->update([
-            'title' => $request->title,
-           
-        ]);
+        $brand = OrderStatus::where('uuid', $uuid)
+            ->update([
+                'title' => $request->title,
+
+            ]);
         return response()->json(['OrderStatus Updated Successfully']);
     }
 
@@ -86,9 +85,9 @@ class OrderStatusController extends Controller
      */
     public function destroy($uuid)
     {
-            $brand=OrderStatus::where('uuid',$uuid)->firstOrFail();
-            $brand->delete();
+        $brand = OrderStatus::where('uuid', $uuid)->firstOrFail();
+        $brand->delete();
 
-            return response()->json('OrderStatus deleted successfully');
+        return response()->json('OrderStatus deleted successfully');
     }
 }

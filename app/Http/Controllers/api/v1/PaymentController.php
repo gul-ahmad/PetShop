@@ -39,46 +39,43 @@ class PaymentController extends Controller
             'swift' => 'required_if:type,bank_transfer',
             'iban' => 'required_if:type,bank_transfer',
             'name' => 'required_if:type,bank_transfer',
-            
+
         ]);
- 
-             if($request->type =='credit_card'){
-                $new_data = [];
-                $new_data["holder_name"] = $request->holder_name;
-                $new_data["ccv"] = $request->holder_name;
-                $new_data["expire_date"] = $request->holder_name;
-                $new_data["number"] = $request->holder_name;
 
-             }
-             
-             if($request->type =='cash_on_delivery'){
-                $new_data = [];
-                $new_data["first_name"] = $request->first_name;
-                $new_data["last_name"] = $request->last_name;
-                $new_data["address"] = $request->address;
+        if ($request->type == 'credit_card') {
+            $new_data = [];
+            $new_data["holder_name"] = $request->holder_name;
+            $new_data["ccv"] = $request->holder_name;
+            $new_data["expire_date"] = $request->holder_name;
+            $new_data["number"] = $request->holder_name;
+        }
 
-             }
-             if($request->type =='bank_transfer'){
-                $new_data = [];
-                $new_data["swift"] = $request->swift;
-                $new_data["iban"] = $request->iban;
-                $new_data["name"] = $request->name;
-
-             }
+        if ($request->type == 'cash_on_delivery') {
+            $new_data = [];
+            $new_data["first_name"] = $request->first_name;
+            $new_data["last_name"] = $request->last_name;
+            $new_data["address"] = $request->address;
+        }
+        if ($request->type == 'bank_transfer') {
+            $new_data = [];
+            $new_data["swift"] = $request->swift;
+            $new_data["iban"] = $request->iban;
+            $new_data["name"] = $request->name;
+        }
 
 
-       // $file ='asdfjadf43243lkjdf';
+        // $file ='asdfjadf43243lkjdf';
         // $data =array('brand'=>$brand,'file' =>$file);
-         //$new_data = [];
+        //$new_data = [];
         // $new_data["brand"] = $brand;
         // $new_data["file"] = $file;
-       
+
         $payment = Payment::create([
-                            'type' => $request->type,
-                            'details' => $new_data,
-          ]);
-    
-          return new PaymentResource($payment);
+            'type' => $request->type,
+            'details' => $new_data,
+        ]);
+
+        return new PaymentResource($payment);
     }
 
     /**
@@ -112,11 +109,10 @@ class PaymentController extends Controller
      */
     public function destroy($uuid)
     {
-       // dd($uuid);
-        $payment= Payment::where('uuid',$uuid)->firstOrFail();
-       // dd($payment);
+
+        $payment = Payment::where('uuid', $uuid)->firstOrFail();
         $payment->delete();
 
-          return response()->json('Payment deleted successfully');
+        return response()->json('Payment deleted successfully');
     }
 }

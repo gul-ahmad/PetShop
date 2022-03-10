@@ -12,7 +12,7 @@ use Illuminate\Validation\Rules\Password as RulesPassword;
 
 class UserController extends Controller
 {
-   /*  public function forgot() {
+    /*  public function forgot() {
         $credentials = request()->validate(['email' => 'required|email']);
 
         Password::sendResetLink($credentials);
@@ -34,23 +34,19 @@ class UserController extends Controller
         return $this->respondWithMessage("Password has been successfully changed");
     } */
 
-    public function userOrders() {
+    public function userOrders()
+    {
 
-        $userId =auth()->user()->id;
-       
+        $userId = auth()->user()->id;
 
-        $authUserOrders = Order::where('user_id',$userId)->get();
-          if(count($authUserOrders)) {
+
+        $authUserOrders = Order::where('user_id', $userId)->get();
+        if (count($authUserOrders)) {
 
             return response()->json([OrderResource::collection($authUserOrders), 'Orders fetched.']);
-
-          }
-          else {
+        } else {
 
             return response()->json('No orders found');
-
-          }
-
-
+        }
     }
 }

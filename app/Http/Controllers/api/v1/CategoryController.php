@@ -33,17 +33,17 @@ class CategoryController extends Controller
     {
         $this->validate($request, [
             'title' => 'required|unique:categories',
-         ]);
- 
-         if (Category::where('title', $request->title)->exists()) {
+        ]);
+
+        if (Category::where('title', $request->title)->exists()) {
             return response()->json(['Category already exist']);
-         }
+        }
         $category = Category::create([
             'slug' => SlugService::createSlug(Category::class, 'slug', $request->title),
             'title' => $request->title,
-          ]);
-    
-          return new CategoryResource($category);
+        ]);
+
+        return new CategoryResource($category);
     }
 
     /**
@@ -55,7 +55,6 @@ class CategoryController extends Controller
     public function show($uuid)
     {
         return new CategoryResource($uuid);
-
     }
 
     /**
@@ -67,12 +66,13 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $uuid)
     {
-        $brand=Category::where('uuid',$uuid)
-        ->update([
-            'slug' => SlugService::createSlug(Category::class, 'slug', $request->title),
-            'title' => $request->title,
-           
-        ]);
+        $brand = Category::where('uuid', $uuid)
+            ->update([
+                'slug' => SlugService::createSlug(Category::class, 'slug', $request->title),
+                'title' => $request->title,
+
+            ]);
+            
         return response()->json(['Category Updated Successfully']);
     }
 
@@ -84,9 +84,9 @@ class CategoryController extends Controller
      */
     public function destroy($uuid)
     {
-        $brand=Category::where('uuid',$uuid)->firstOrFail();
+        $brand = Category::where('uuid', $uuid)->firstOrFail();
         $brand->delete();
 
-          return response()->json('Category deleted successfully');
+        return response()->json('Category deleted successfully');
     }
 }
