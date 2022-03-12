@@ -10,6 +10,9 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use DB;
+use Illuminate\Contracts\View\View;
+use Barryvdh\DomPDF\Facade as PDF;
+
 
 class OrderController extends Controller
 {
@@ -21,6 +24,17 @@ class OrderController extends Controller
     public function index()
     {
         return  $orders = Order::with('payment')->paginate(5);
+    }
+
+    public function download(Request $request)
+    {
+
+        $orderDetails = Order::with(['payment'])->where('uuid', $request->uuid)->first();
+        $headers = array(
+            'Content-Type' => 'application/pdf',
+        );
+        $pdf = PDF::loadView('pdf', ['orderDetails' => $orderDetails, 'headers' => $headers])->setOptions(['defaultFont' => 'sans-serif']);
+        return $pdf->download('order_' . $request->uuid . '.pdf');
     }
 
     public function dashboard(Request $request)
@@ -138,12 +152,19 @@ class OrderController extends Controller
             $new_product = [];
             $new_product["uuid"] = $request->products[$i]['uuid'];
             $new_product["quantity"] = $request->products[$i]['quantity'];
-            $total_amount += $request->products[$i]['price'];
+            $total_amount += ($request->products[$i]['price'] * $request->products[$i]['quantity']);
             array_push($stock, $new_product);
         }
+      
         //Delivery Fee check
         $delivery_fee = $total_amount > 500 ? 0 : 15;
+       
+        if($delivery_fee > 1) {
+          
+          $total_amount +=15;
 
+        }
+       
         //Handling Order and Payment creation via Transaction in case of failur to rollback
         DB::beginTransaction();
         try {
@@ -175,7 +196,7 @@ class OrderController extends Controller
 
             return response()->json(['Order Created Successfully' => true]);
         } catch (\Exception $e) {
-           // dd($e);
+            // dd($e);
 
             DB::rollback();
 

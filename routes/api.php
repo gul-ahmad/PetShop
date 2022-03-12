@@ -123,6 +123,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'api\v1','middleware'=>['auth:san
     Route::get('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class, 'show']); 
     Route::put('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class, 'update']);
      Route::delete('order/{uuid}',[App\Http\Controllers\api\v1\OrderController::class,'destroy']);
-     Route::get('orders/dashboard',[App\Http\Controllers\api\v1\OrderController::class, 'dashboard']);  
+     Route::get('orders/dashboard',[App\Http\Controllers\api\v1\OrderController::class, 'dashboard']); 
+     Route::get('order/{uuid}/download',[App\Http\Controllers\api\v1\OrderController::class, 'download']);   
 
 });

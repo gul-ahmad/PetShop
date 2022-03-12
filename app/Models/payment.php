@@ -36,7 +36,7 @@ class Payment extends Model
     }
     public function order()
     {
-        return $this->hasMany(Order::class);
+        return $this->belongsTo(Order::class);
     }
 }
 
