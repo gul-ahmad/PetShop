@@ -155,16 +155,15 @@ class OrderController extends Controller
             $total_amount += ($request->products[$i]['price'] * $request->products[$i]['quantity']);
             array_push($stock, $new_product);
         }
-      
+
         //Delivery Fee check
         $delivery_fee = $total_amount > 500 ? 0 : 15;
-       
-        if($delivery_fee > 1) {
-          
-          $total_amount +=15;
 
+        if ($delivery_fee > 1) {
+
+            $total_amount += 15;
         }
-       
+
         //Handling Order and Payment creation via Transaction in case of failur to rollback
         DB::beginTransaction();
         try {
@@ -176,7 +175,6 @@ class OrderController extends Controller
                 'details' => $payment_data,
             ]);
             // $queries = DB::getQueryLog();
-            //return dd($queries);
             if ($payment) {
                 $payment_id = $payment->id;
                 $order = Order::create([
@@ -223,24 +221,46 @@ class OrderController extends Controller
      */
     public function update(Request $request, $uuid)
     {
-        //Pending Gul
-        /* $this->validate($request, [
-            'order_status_uuid' => 'required',
-           // 'payment_uuid' => 'required',
+
+        
+        $this->validate($request, [
+            'order_status_id' => 'required',
+            'payment_uuid' => 'required',
             'products' => 'required',
-           // 'products.*.price' => 'required',
             'products.*.quantity' => 'required',
             'products.*.uuid' => 'required',
+            'products.*.price' => 'required',
             'billing' => 'required',
             'shipping' => 'required',
 
         ]);
 
-      //  $total_qty = '0';
+        if ($request->type == 'credit_card') {
+            $payment_data = [];
+            $payment_data["holder_name"] = $request->holder_name;
+            $payment_data["ccv"] = $request->holder_name;
+            $payment_data["expire_date"] = $request->holder_name;
+            $payment_data["number"] = $request->holder_name;
+        }
+
+        if ($request->type == 'cash_on_delivery') {
+            $payment_data = [];
+            $payment_data["first_name"] = $request->first_name;
+            $payment_data["last_name"] = $request->last_name;
+            $payment_data["address"] = $request->address;
+        }
+        if ($request->type == 'bank_transfer') {
+            $payment_data = [];
+            $payment_data["swift"] = $request->swift;
+            $payment_data["iban"] = $request->iban;
+            $payment_data["name"] = $request->name;
+        }
+
 
         $total_amount = '0';
+        /// dd($total_amount);
         $products = $request->get('products');
-        dd($products);
+        // dd($products);
         $new_data = [];
         $new_data["uuid"] = $request->uuid;
         $new_data["quantity"] = $request->quantity;
@@ -251,71 +271,44 @@ class OrderController extends Controller
         $stock = [];
         for ($i = 0; $i < count($products); $i++) {
 
-            $price = Product::select('price')
-            ->where('uuid','=', $request->products[$i]['uuid'])
-            ->first();
             $new_product = [];
             $new_product["uuid"] = $request->products[$i]['uuid'];
-            $new_product["quantity"] =$request->products[$i]['quantity'];
-            $total_amount += $price->price[$i]['price'];
+            $new_product["quantity"] = $request->products[$i]['quantity'];
+            $total_amount += ($request->products[$i]['price'] * $request->products[$i]['quantity']);
             array_push($stock, $new_product);
-
-
         }
         //Delivery Fee check
         $delivery_fee = $total_amount > 500 ? 0 : 15;
+        if ($delivery_fee > 1) {
 
-           //Handling Order and Payment creation via Transaction in case of failur to rollback
-            DB::beginTransaction();
-            try{
-
-             // DB::connection()->enableQueryLog();
-
-               $payment = Payment::create([
+            $total_amount += 15;
+        }
+        //Handling Order and Payment creation via Transaction in case of failur to rollback
+        DB::beginTransaction();
+        try {
+            Payment::where('uuid', $request->payment_uuid)->update([
                 'type' => $request->type,
                 'details' => $payment_data,
-                ]);
-               // $queries = DB::getQueryLog();
-                //return dd($queries);
-                if($payment) {
-                    $payment_id =$payment->id;
-                    $order = Order::create([
-                        'user_id' => Auth::user()->id,
-                        'order_status_id' => 3,
-                        'payment_id' => $payment_id,
-                        'products' => $stock,
-                        'address' => $new_address,
-                        'amount' =>$total_amount,
-                        'delivery_fee'=>$delivery_fee,
-                        'shipped_at'=>Carbon::now()
-                        ]);
+            ]);
 
-                        Order::where('uuid', $request->uuid)->update([
-                            'user_id' => Auth::user()->id,
-                            'order_status_id' => 3,
-                            'payment_id' => $payment_id,
-                            'products' => $stock,
-                            'address' => $new_address,
-                            'amount' =>$total_amount,
-                            'delivery_fee'=>$delivery_fee,
-                            'shipped_at'=>Carbon::now()
-                        ]);
+            Order::where('uuid', $request->uuid)->update([
+                'user_id' => Auth::user()->id,
+                'order_status_id' => $request->order_status_id,
+                'products' => $stock,
+                'address' => $new_address,
+                'amount' => $total_amount,
+                'delivery_fee' => $delivery_fee
+            ]);
 
-                }
+            DB::commit();
 
+            return response()->json(['Order Updated Successfully' => true]);
+        } catch (\Exception $e) {
 
-                DB::commit();
+            DB::rollback();
 
-                return response()->json(['Order Created Successfully' => true]);
-
-            } catch (\Exception $e) {
-                dd($e);
-
-                DB::rollback();
-
-                return response()->json(['Sorry your order was not placed' => true]);
-
-            } */
+            return response()->json(['Sorry  Order was not updated' => true]);
+        }
     }
 
     /**
