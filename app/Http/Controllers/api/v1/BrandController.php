@@ -27,7 +27,7 @@ class BrandController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -36,19 +36,20 @@ class BrandController extends Controller
             'title' => $request->title,
         ]);
 
-     
+
        return response()->json(['success' => true]);
+
     }
 
     /**
      * Display the specified resource.
      *
      * @param  int  $uuid
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($uuid)
+    public function show(brand $brand)
     {
-        return new BrandResource($uuid);
+        return new BrandResource($brand);
     }
 
     /**
@@ -56,7 +57,7 @@ class BrandController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $uuid
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $uuid)
     {
@@ -72,7 +73,7 @@ class BrandController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($uuid)
     {

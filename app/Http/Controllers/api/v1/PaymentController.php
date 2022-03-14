@@ -23,7 +23,7 @@ class PaymentController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -63,13 +63,6 @@ class PaymentController extends Controller
             $new_data["name"] = $request->name;
         }
 
-
-        // $file ='asdfjadf43243lkjdf';
-        // $data =array('brand'=>$brand,'file' =>$file);
-        //$new_data = [];
-        // $new_data["brand"] = $brand;
-        // $new_data["file"] = $file;
-
         $payment = Payment::create([
             'type' => $request->type,
             'details' => $new_data,
@@ -82,7 +75,7 @@ class PaymentController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
@@ -94,7 +87,7 @@ class PaymentController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
@@ -105,7 +98,7 @@ class PaymentController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($uuid)
     {
