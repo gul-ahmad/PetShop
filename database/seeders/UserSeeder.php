@@ -18,10 +18,20 @@ class UserSeeder extends Seeder
     {
 
 
-     //   User::factory()->count(10)->create();
-     $user = User::factory()
+        User::factory()->count(10)->create();
+    /*  $user = User::factory()
             ->has(Order::factory()->count(3))
-            ->create();
+            ->create(); */
+
+           /*  $user = User::factory()
+                ->has(Order::factory()->count(2))
+                ->count(3)
+                ->create();
+ */
+
+
+
+
         // User Creation
          $user = new User();
         $user->uuid = HelperFunction::_uuid();

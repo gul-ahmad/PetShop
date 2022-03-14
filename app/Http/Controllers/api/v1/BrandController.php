@@ -13,13 +13,14 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
         $data = Brand::all();
 
-        return response()->json([BrandResource::collection($data), 'Brands fetched.']);
+       // return response()->json([BrandResource::collection($data), 'Brands fetched.']);
+        return response()->json([ 'data'=>$data],200);
     }
 
     /**
@@ -35,13 +36,14 @@ class BrandController extends Controller
             'title' => $request->title,
         ]);
 
-        return new BrandResource($brand);
+     
+       return response()->json(['success' => true]);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $uuid
      * @return \Illuminate\Http\Response
      */
     public function show($uuid)
@@ -53,7 +55,7 @@ class BrandController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  int  $uuid
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $uuid)

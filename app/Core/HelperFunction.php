@@ -2,7 +2,7 @@
 
 namespace App\Core;
 
-use App\Models\product;
+use App\Models\Product;
 
 use Illuminate\Routing\Route;
 

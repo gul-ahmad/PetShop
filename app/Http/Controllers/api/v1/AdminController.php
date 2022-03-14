@@ -27,8 +27,7 @@ class AdminController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse 
      */
     public function edit(Request $request, User $user)
     {
@@ -106,7 +105,7 @@ class AdminController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()
-            ->json(['message' => 'Hi Admin ' . $user->name . ', welcome to home', 'access_token' => $token, 'token_type' => 'Bearer',]);
+            ->json(['message' => 'Hi Admin ' . $user->first_name . ', welcome to home', 'access_token' => $token, 'token_type' => 'Bearer',]);
     }
 
     // method for user logout and delete token
