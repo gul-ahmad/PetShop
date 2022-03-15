@@ -8,10 +8,10 @@ class BrandResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
-     *
+     * @mixin \App\Model\Brand
      * @param  \Illuminate\Http\Request  $request
-     *  @extends JsonResource<Brand>
      */
+    
     public function toArray($request)
     {
         return [

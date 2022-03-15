@@ -41,15 +41,15 @@ class BrandController extends Controller
 
     }
 
-    /**
+     /**
      * Display the specified resource.
      *
-     * @param  int  $uuid
+     * @param  string  $uuid
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(brand $brand)
+    public function show($uuid)
     {
-        return new BrandResource($brand);
+        return new BrandResource($uuid);
     }
 
     /**
@@ -72,7 +72,7 @@ class BrandController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string  $uuid
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($uuid)
